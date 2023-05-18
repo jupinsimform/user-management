@@ -1,0 +1,59 @@
+.main-login-page {
+  display: flex;
+  align-items: center;
+}
+
+.main-login-form {
+  display: flex;
+  align-items: center;
+}
+
+.login {
+  font-size: 3.7rem;
+}
+.login-form {
+  width: 100%;
+}
+
+.img {
+  width: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 17px;
+  margin: 13px 0;
+}
+
+.input-field {
+  padding: 0.8rem;
+  width: 100vw;
+  max-width: 520px;
+  border-radius: 4px;
+  border: 1px solid rgb(138, 137, 137);
+  background-color: rgba(250, 235, 216, 255);
+}
+
+.signup-text {
+  margin-top: 10px;
+}
+
+.btns {
+  margin-top: 27px;
+}
+
+.submitBtn {
+  padding: 13px;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 5px;
+  background-color: rgba(0, 127, 250, 255);
+}
