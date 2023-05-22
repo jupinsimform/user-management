@@ -1,9 +1,20 @@
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../redux/feature/userSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 interface LoginFormValues {
   email: string;
   password: string;
+}
+
+interface Usertype {
+  name: string;
+  email: string;
+  password: string;
+  phonenumber: string;
+  profile: string;
 }
 
 const validationSchema = Yup.object().shape({
@@ -16,11 +27,42 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginForm() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const initialValues: LoginFormValues = {
     email: "",
     password: "",
   };
-  const handleSubmit = (values: LoginFormValues) => {};
+
+  function navigateToSignup() {
+    navigate("/signup");
+  }
+
+  const handleSubmit = (values: LoginFormValues) => {
+    const storedUsers = localStorage.getItem("users");
+    const users: Usertype[] = storedUsers ? JSON.parse(storedUsers) : [];
+
+    const isRegister: Usertype[] = users!.filter(
+      (user: Usertype) => user.email === values.email
+    );
+
+    if (isRegister.length == 0) {
+      alert("user does not exist");
+      return;
+    } else {
+      const user = users.filter(
+        (user: Usertype) =>
+          user.email === values.email && user.password === values.password
+      );
+      if (user.length !== 0) {
+        dispatch(loginUser(values));
+        navigate("/");
+      } else {
+        alert("invalide credentials");
+        navigate("/login");
+      }
+    }
+  };
   return (
     <div className="login-form">
       <div className="login">Login</div>
@@ -68,7 +110,7 @@ function LoginForm() {
       </Formik>
       <div>
         <div className="signup-text">
-          Create an account? <a href="/signup">SignUp</a>
+          Create an account? <a onClick={navigateToSignup}>SignUp</a>
         </div>
       </div>
     </div>

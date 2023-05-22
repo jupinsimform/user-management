@@ -9,8 +9,8 @@ function SignupPage() {
         <div className="main-signup-form">
           <SignupForm />
         </div>
-        <div className="img">
-          <img src={image} alt="" />
+        <div className="image">
+          <img src={image} alt="" className="signupImage" />
         </div>
       </div>
     </>

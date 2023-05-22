@@ -10,7 +10,7 @@ function LoginPage() {
           <LoginForm />
         </div>
         <div className="img">
-          <img src={image} alt="" />
+          <img src={image} alt="" className="img-picture" />
         </div>
       </div>
     </>
