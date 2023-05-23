@@ -2,17 +2,12 @@ import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { signupUser } from "../../redux/feature/userSlice";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
-
-interface MyFormValues {
-  name: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  confirmPassword: string;
-  profile: string;
-}
+import { MyFormValues } from "../../types/Types";
+import { toast, Slide } from "react-toastify";
+import Show from "../../assets/showpassword.svg";
+import Hide from "../../assets/hidepassword.svg";
 
 const initialValues: MyFormValues = {
   name: "",
@@ -82,6 +77,7 @@ function SignupForm() {
   const imgref = useRef<HTMLInputElement>(null);
   const [imgUrl, setImgurl] = useState<string>("")!;
   const [showimg, setShowimg] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -89,7 +85,10 @@ function SignupForm() {
     navigate("/login");
   }
 
-  const handleSubmit = (values: MyFormValues) => {
+  const handleSubmit = (
+    values: MyFormValues,
+    { resetForm }: FormikHelpers<MyFormValues>
+  ) => {
     const storedUsers = localStorage.getItem("users");
     const users: MyFormValues[] = storedUsers ? JSON.parse(storedUsers) : [];
 
@@ -98,12 +97,27 @@ function SignupForm() {
     );
 
     if (emailExists) {
-      alert("User already Exist!");
+      toast.error("this email is already registered", {
+        position: toast.POSITION.TOP_RIGHT,
+        transition: Slide,
+        autoClose: 1000,
+      });
       return;
     }
     values.profile = imgUrl;
     dispatch(signupUser(values));
     navigate("/");
+    resetForm();
+  };
+
+  const handleReset = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    { resetForm }: FormikHelpers<MyFormValues>
+  ) => {
+    event.preventDefault();
+    resetForm();
+    setImgurl("");
+    setShowimg(false);
   };
 
   return (
@@ -118,13 +132,12 @@ function SignupForm() {
           return (
             <Form className="main-form">
               <div className="profile">
+                <label htmlFor="profile">+ Photo</label>
                 {showimg ? (
                   <img src={imgUrl} alt="" className="profile-picture" />
                 ) : (
                   ""
                 )}
-
-                <label htmlFor="profile">+ Photo</label>
                 <input
                   ref={imgref}
                   type="file"
@@ -157,6 +170,7 @@ function SignupForm() {
                 <Field
                   type="text"
                   id="name"
+                  placeholder="Enter Full Name"
                   name="name"
                   className="input-field"
                 />
@@ -173,6 +187,7 @@ function SignupForm() {
                 <Field
                   type="text"
                   id="email"
+                  placeholder="example@domain.com"
                   name="email"
                   className="input-field"
                 />
@@ -189,6 +204,7 @@ function SignupForm() {
                 <Field
                   type="text"
                   id="phoneNumber"
+                  placeholder="+91XXXXXXXXXX"
                   name="phoneNumber"
                   className="input-field"
                 />
@@ -202,12 +218,21 @@ function SignupForm() {
                 <label htmlFor="password" className="label">
                   Password
                 </label>
-                <Field
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="input-field"
-                />
+                <div className="password-field">
+                  <Field
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    placeholder="Must have atleast 8 character"
+                    name="password"
+                    className="input-field"
+                  />
+                  <img
+                    height={20}
+                    width={20}
+                    src={showPassword ? Show : Hide}
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                </div>
                 <ErrorMessage
                   name="password"
                   component="div"
@@ -230,12 +255,15 @@ function SignupForm() {
                   className="error-msg"
                 />
               </div>
-
               <div className="btns">
-                <button type="submit" className="submitBtn">
+                <button type="submit" className="submitButton">
                   Submit
                 </button>
-                <button type="reset" className="resetBtn">
+                <button
+                  type="reset"
+                  className="resetButton"
+                  onClick={handleReset}
+                >
                   Reset
                 </button>
               </div>
@@ -245,7 +273,10 @@ function SignupForm() {
       </Formik>
       <div>
         <div className="login-text">
-          Already have an account? <a onClick={navigateToLogin}>Login</a>
+          Already have an account?
+          <a onClick={navigateToLogin}>
+            <span>Login</span>
+          </a>
         </div>
       </div>
     </div>

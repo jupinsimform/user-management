@@ -1,21 +1,13 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/feature/userSlice";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
-
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
-
-interface Usertype {
-  name: string;
-  email: string;
-  password: string;
-  phonenumber: string;
-  profile: string;
-}
+import { Usertype, LoginFormValues } from "../../types/Types";
+import { toast, Slide } from "react-toastify";
+import Show from "../../assets/showpassword.svg";
+import Hide from "../../assets/hidepassword.svg";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -29,6 +21,7 @@ const validationSchema = Yup.object().shape({
 function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
   const initialValues: LoginFormValues = {
     email: "",
     password: "",
@@ -38,7 +31,10 @@ function LoginForm() {
     navigate("/signup");
   }
 
-  const handleSubmit = (values: LoginFormValues) => {
+  const handleSubmit = (
+    values: LoginFormValues,
+    { resetForm }: FormikHelpers<LoginFormValues>
+  ) => {
     const storedUsers = localStorage.getItem("users");
     const users: Usertype[] = storedUsers ? JSON.parse(storedUsers) : [];
 
@@ -47,7 +43,11 @@ function LoginForm() {
     );
 
     if (isRegister.length == 0) {
-      alert("user does not exist");
+      toast.error("User Does Not Exist", {
+        position: toast.POSITION.TOP_RIGHT,
+        transition: Slide,
+        autoClose: 1000,
+      });
       return;
     } else {
       const user = users.filter(
@@ -57,8 +57,13 @@ function LoginForm() {
       if (user.length !== 0) {
         dispatch(loginUser(values));
         navigate("/");
+        resetForm();
       } else {
-        alert("invalide credentials");
+        toast.warn("Wrong Password", {
+          position: toast.POSITION.TOP_RIGHT,
+          transition: Slide,
+          autoClose: 1000,
+        });
         navigate("/login");
       }
     }
@@ -79,6 +84,7 @@ function LoginForm() {
             <Field
               type="text"
               id="email"
+              placeholder="example@domain.com"
               name="email"
               className="input-field"
             />
@@ -89,12 +95,21 @@ function LoginForm() {
             <label htmlFor="password" className="label">
               Password
             </label>
-            <Field
-              type="password"
-              id="password"
-              name="password"
-              className="input-field"
-            />
+            <div className="password-field">
+              <Field
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder="Must have atleast 8 character"
+                name="password"
+                className="input-field"
+              />
+              <img
+                height={20}
+                width={20}
+                src={showPassword ? Show : Hide}
+                onClick={() => setShowPassword(!showPassword)}
+              />
+            </div>
             <ErrorMessage
               name="password"
               component="div"
@@ -110,7 +125,10 @@ function LoginForm() {
       </Formik>
       <div>
         <div className="signup-text">
-          Create an account? <a onClick={navigateToSignup}>SignUp</a>
+          Create an account?{" "}
+          <a onClick={navigateToSignup}>
+            <span>SignUp</span>{" "}
+          </a>
         </div>
       </div>
     </div>

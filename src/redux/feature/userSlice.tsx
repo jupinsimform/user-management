@@ -1,12 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-interface Usertype {
-  name: string;
-  email: string;
-  password: string;
-  phonenumber: string;
-  profile: string;
-}
+import { Usertype } from "../../types/Types";
 
 const users: Usertype[] = JSON.parse(localStorage.getItem("users")!) || [];
 

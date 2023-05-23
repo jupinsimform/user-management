@@ -1,32 +1,48 @@
 .main-login-page {
   display: flex;
   align-items: center;
-  width: 80%;
-  margin: 0 auto;
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  background-color: white;
+  border-radius: 20px;
 }
 
 .main-login-form {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 45%;
+}
+.main-form {
+  width: 80%;
+}
+
+.image {
+  width: 55%;
+}
+
+.loginImage {
+  width: 80%;
 }
 
 .login {
   font-size: 3.7rem;
 }
+
 .login-form {
   width: 100%;
+  padding: 0 50px;
 }
 
-.img {
-  /* width: 70%; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.password-field {
+  position: relative;
 }
 
-.img-picture {
-  width: -webkit-fill-available;
+.password-field img {
+  position: absolute;
+  cursor: pointer;
+  top: 30%;
+  right: 2%;
 }
 
 .form-field {
@@ -37,12 +53,12 @@
 .label {
   font-size: 17px;
   margin: 13px 0;
+  width: 100%;
 }
 
 .input-field {
   padding: 0.8rem;
-  width: 100vw;
-  max-width: 520px;
+  width: 100%;
   border-radius: 4px;
   border: 1px solid rgb(138, 137, 137);
   background-color: rgba(250, 235, 216, 255);
@@ -50,6 +66,13 @@
 
 .signup-text {
   margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+.signup-text span {
+  color: rgb(93, 93, 250);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .btns {
@@ -67,4 +90,28 @@
 
 .error-msg {
   color: red;
+}
+
+@media (max-width: 576px) {
+  .image {
+    display: none;
+  }
+  .main-login-form {
+    width: 100%;
+  }
+  .main-form {
+    width: 100%;
+  }
+  .login {
+    text-align: center;
+  }
+  .btns {
+    text-align: center;
+  }
+  .submitBtn {
+    padding: 7px;
+  }
+  .signup-text {
+    text-align: center;
+  }
 }
