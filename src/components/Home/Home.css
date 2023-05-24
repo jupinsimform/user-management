@@ -19,7 +19,6 @@
   margin: auto 0px auto 20px;
   width: 55px;
   height: 55px;
-  border: 2px solid rgb(250, 235, 216);
 }
 
 .logout-btn {
@@ -70,6 +69,7 @@
   height: 200px;
   border-radius: 50%;
   margin: 15px 0;
+  border: 2px solid rgb(250, 235, 216);
 }
 
 .container .boxes .box h3 {
