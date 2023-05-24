@@ -19,6 +19,7 @@
   margin: auto 0px auto 20px;
   width: 55px;
   height: 55px;
+  border: 2px solid rgb(250, 235, 216);
 }
 
 .logout-btn {
