@@ -26,17 +26,21 @@
 }
 
 .profile {
-  margin: 20px 0;
+  margin: 20px 0 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 17px;
+}
+.profile label {
+  cursor: pointer;
 }
 
 .profile-picture {
   height: 100px;
   width: 100px;
   border-radius: 50%;
+  border: 2px solid gray;
 }
 
 .signup {
@@ -62,8 +66,8 @@
   padding: 0.8rem;
   width: 100%;
   border-radius: 4px;
-  border: 1px solid rgb(138, 137, 137);
-  background-color: rgba(250, 235, 216, 255);
+  border: 1px solid rgb(173, 172, 172);
+  background-color: rgb(250, 235, 216);
 }
 
 .password-field {
@@ -92,15 +96,24 @@
   border: none;
   font-size: 16px;
   border-radius: 5px;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
 }
 
 .submitButton {
   margin-right: 15px;
-  background-color: rgba(0, 127, 250, 255);
+  background-color: rgb(0, 127, 250);
+}
+
+.submitButton:hover {
+  background-color: rgb(1, 93, 185);
 }
 
 .resetButton {
-  background-color: rgba(219, 52, 71, 255);
+  background-color: rgb(219, 52, 71);
+}
+.resetButton:hover {
+  background-color: rgb(216, 5, 30);
 }
 
 .login-text {
@@ -112,9 +125,14 @@
   color: rgb(93, 93, 250);
   text-decoration: underline;
   cursor: pointer;
+  margin-left: 3px;
 }
 
-@media (max-width: 576px) {
+.login-text span:hover {
+  color: rgb(52, 52, 241);
+}
+
+@media (max-width: 876px) {
   .image {
     display: none;
   }

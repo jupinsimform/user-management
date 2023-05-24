@@ -1,33 +1,33 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { signupUser } from "../../redux/feature/userSlice";
+import { loginUser, signupUser } from "../../redux/feature/userSlice";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FormikHelpers,
+  FormikProps,
+} from "formik";
 import * as Yup from "yup";
 import { MyFormValues } from "../../types/Types";
 import { toast, Slide } from "react-toastify";
 import Show from "../../assets/showpassword.svg";
 import Hide from "../../assets/hidepassword.svg";
 
-const initialValues: MyFormValues = {
-  name: "",
-  email: "",
-  phoneNumber: "",
-  password: "",
-  confirmPassword: "",
-  profile: "",
-};
-
+// Function to check if the file type is valid (jpg, png)
 function checkFilesType(files: File): boolean {
   let valid = true;
   if (files) {
-    if (!["image/jpg", "image/jpeg", "image/png"].includes(files.type)) {
+    if (!["image/jpg", "image/png"].includes(files.type)) {
       valid = false;
     }
   }
   return valid;
 }
 
+// Function to check if the file size is within the allowed limit (2MB)
 function checkFilesSize(files: File): boolean {
   let valid = true;
   if (files) {
@@ -39,6 +39,7 @@ function checkFilesSize(files: File): boolean {
   return valid;
 }
 
+// Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required("Name is required!")
@@ -56,21 +57,21 @@ const validationSchema = Yup.object().shape({
     .required("Confirm Password is required")
     .oneOf([Yup.ref("password"), ""], "Passwords do not match"),
   profile: Yup.mixed()
-    .required("Profile picture image is required")
+    .required("Profile picture is required")
+    .test("FILE_SIZE", "Too Big! Image only upto 2mb allowed", (value) => {
+      if (value instanceof File && checkFilesSize(value)) {
+        return true;
+      }
+    })
     .test(
       "FILE_TYPE",
-      "Invalid File Format! (Only Png,jpg allowed)",
+      "Invalid File Format! (Only png,jpg allowed)",
       (value) => {
-        if (value instanceof File) {
-          return checkFilesType(value);
+        if (value instanceof File && checkFilesType(value)) {
+          return true;
         }
       }
-    )
-    .test("FILE_SIZE", "Too Big! Image only upto 2mb allowed", (value) => {
-      if (value instanceof File) {
-        return checkFilesSize(value);
-      }
-    }),
+    ),
 });
 
 function SignupForm() {
@@ -81,41 +82,61 @@ function SignupForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  function navigateToLogin() {
-    navigate("/login");
-  }
+  // Initial values for the form fields
+  const initialValues: MyFormValues = {
+    name: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
+    profile: "",
+  };
 
+  // Function to navigate to the login page
+  const navigateToLogin = () => {
+    navigate("/login");
+  };
+
+  // Handle form submission
   const handleSubmit = (
     values: MyFormValues,
     { resetForm }: FormikHelpers<MyFormValues>
   ) => {
+    // Get stored users from local storage
     const storedUsers = localStorage.getItem("users");
     const users: MyFormValues[] = storedUsers ? JSON.parse(storedUsers) : [];
 
+    // Check if email is already registered
     const emailExists = users.some(
       (user: MyFormValues) => user.email === values.email
     );
 
     if (emailExists) {
+      // this email is already registered,show toast error
       toast.error("this email is already registered", {
         position: toast.POSITION.TOP_RIGHT,
         transition: Slide,
         autoClose: 1000,
       });
       return;
+    } else {
+      values.profile = imgUrl;
+      dispatch(signupUser(values));
+      navigate("/");
+      dispatch(loginUser({ email: values.email, password: values.password }));
+      imgref.current!.value = "";
+      setImgurl("");
+      resetForm();
     }
-    values.profile = imgUrl;
-    dispatch(signupUser(values));
-    navigate("/");
-    resetForm();
   };
 
+  // Handle form reset
   const handleReset = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    { resetForm }: FormikHelpers<MyFormValues>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    formik: FormikProps<MyFormValues>
   ) => {
     event.preventDefault();
-    resetForm();
+    formik.resetForm();
     setImgurl("");
     setShowimg(false);
   };
@@ -262,7 +283,7 @@ function SignupForm() {
                 <button
                   type="reset"
                   className="resetButton"
-                  onClick={handleReset}
+                  onClick={(e) => handleReset(e, formik)}
                 >
                   Reset
                 </button>
@@ -273,7 +294,7 @@ function SignupForm() {
       </Formik>
       <div>
         <div className="login-text">
-          Already have an account?
+          Already have an account ?
           <a onClick={navigateToLogin}>
             <span>Login</span>
           </a>

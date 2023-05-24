@@ -2,7 +2,7 @@ export interface Usertype {
   name: string;
   email: string;
   password: string;
-  phonenumber: string;
+  phoneNumber: string;
   profile: string;
 }
 
@@ -13,7 +13,7 @@ export interface StateType {
       name: string;
       email: string;
       password: string;
-      phonenumber: string;
+      phoneNumber: string;
       profile: string;
     };
   };

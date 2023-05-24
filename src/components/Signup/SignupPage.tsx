@@ -10,7 +10,7 @@ function SignupPage() {
           <SignupForm />
         </div>
         <div className="image">
-          <img src={image} alt="" className="signupImage" />
+          <img src={image} alt="Form-Image" className="signupImage" />
         </div>
       </div>
     </>

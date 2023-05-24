@@ -37,7 +37,7 @@ function Home() {
               <img src={user.profile} alt="" />
               <p>{user.name}</p>
               <h3>{user.email}</h3>
-              <h4>Phone No. {user.phonenumber}</h4>
+              <h4>Phone No. {user.phoneNumber}</h4>
             </div>
           </div>
         </div>

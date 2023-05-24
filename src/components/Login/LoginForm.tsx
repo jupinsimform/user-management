@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/feature/userSlice";
@@ -9,6 +9,7 @@ import { toast, Slide } from "react-toastify";
 import Show from "../../assets/showpassword.svg";
 import Hide from "../../assets/hidepassword.svg";
 
+// Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .required("Email is required")
@@ -22,57 +23,69 @@ function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const initialValues: LoginFormValues = {
-    email: "",
-    password: "",
-  };
 
-  function navigateToSignup() {
+  // Function to navigate to signup page
+  const navigateToSignup = useCallback(() => {
     navigate("/signup");
-  }
+  }, [navigate]);
 
-  const handleSubmit = (
-    values: LoginFormValues,
-    { resetForm }: FormikHelpers<LoginFormValues>
-  ) => {
-    const storedUsers = localStorage.getItem("users");
-    const users: Usertype[] = storedUsers ? JSON.parse(storedUsers) : [];
+  // Toggle password visibility
+  const handleTogglePassword = useCallback(() => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  }, [showPassword]);
 
-    const isRegister: Usertype[] = users!.filter(
-      (user: Usertype) => user.email === values.email
-    );
+  // Handle form submission
+  const handleSubmit = useCallback(
+    (
+      values: LoginFormValues,
+      { resetForm }: FormikHelpers<LoginFormValues>
+    ) => {
+      // Get stored users from local storage
+      const storedUsers = localStorage.getItem("users");
+      const users: Usertype[] = storedUsers ? JSON.parse(storedUsers) : [];
 
-    if (isRegister.length == 0) {
-      toast.error("User Does Not Exist", {
-        position: toast.POSITION.TOP_RIGHT,
-        transition: Slide,
-        autoClose: 1000,
-      });
-      return;
-    } else {
-      const user = users.filter(
-        (user: Usertype) =>
-          user.email === values.email && user.password === values.password
+      // Check if the user exists
+      const isRegister: Usertype[] = users!.filter(
+        (user: Usertype) => user.email === values.email
       );
-      if (user.length !== 0) {
-        dispatch(loginUser(values));
-        navigate("/");
-        resetForm();
-      } else {
-        toast.warn("Wrong Password", {
+
+      if (!isRegister) {
+        // User does not exist, show error toast
+        toast.error("User Does Not Exist", {
           position: toast.POSITION.TOP_RIGHT,
           transition: Slide,
           autoClose: 1000,
         });
-        navigate("/login");
+        return;
+      } else {
+        // User exists, check password validity
+        const user = users.filter(
+          (user: Usertype) =>
+            user.email === values.email && user.password === values.password
+        );
+        if (user.length !== 0) {
+          // Password is correct, dispatch login action, navigate to home, and reset form
+          dispatch(loginUser(values));
+          navigate("/");
+          resetForm();
+        } else {
+          // Wrong password, show warning toast
+          toast.warn("Wrong Password", {
+            position: toast.POSITION.TOP_RIGHT,
+            transition: Slide,
+            autoClose: 1000,
+          });
+          navigate("/login");
+        }
       }
-    }
-  };
+    },
+    [dispatch, navigate]
+  );
   return (
     <div className="login-form">
       <div className="login">Login</div>
       <Formik
-        initialValues={initialValues}
+        initialValues={{ email: "", password: "" }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -107,7 +120,7 @@ function LoginForm() {
                 height={20}
                 width={20}
                 src={showPassword ? Show : Hide}
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={handleTogglePassword}
               />
             </div>
             <ErrorMessage
@@ -117,7 +130,7 @@ function LoginForm() {
             />
           </div>
           <div className="btns">
-            <button type="submit" className="submitBtn">
+            <button type="submit" className="loginButton">
               Login
             </button>
           </div>
@@ -125,9 +138,9 @@ function LoginForm() {
       </Formik>
       <div>
         <div className="signup-text">
-          Create an account?{" "}
+          Create an account ?
           <a onClick={navigateToSignup}>
-            <span>SignUp</span>{" "}
+            <span>SignUp</span>
           </a>
         </div>
       </div>
@@ -135,4 +148,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+export default memo(LoginForm);
