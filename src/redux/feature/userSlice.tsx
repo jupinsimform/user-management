@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Usertype } from "../../types/Types";
+import { decryption } from "../../components/Login/LoginForm";
 
 const users: Usertype[] = JSON.parse(localStorage.getItem("users")!) || [];
 
@@ -20,7 +21,7 @@ const userSlice = createSlice({
       users.map((user: Usertype) => {
         if (
           user.email === action.payload.email &&
-          user.password === action.payload.password
+          decryption(user.password) === action.payload.password
         ) {
           state.userinfo = user;
           state.islogin = true;

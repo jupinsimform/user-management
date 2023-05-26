@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { StateType } from "./types/Types";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import NotFound from "./components/NotFound";
 
 function App() {
   const islogin = useSelector((state: StateType) => state.user.islogin);
@@ -24,11 +25,12 @@ function App() {
           <Route
             path="/signup"
             element={!islogin ? <SignupPage /> : <Navigate to="/" />}
-          ></Route>
+          />
           <Route
             path="/login"
             element={!islogin ? <LoginPage /> : <Navigate to="/" />}
-          ></Route>
+          />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import CryptoJS from "crypto-js";
 import { useDispatch } from "react-redux";
 import { loginUser, signupUser } from "../../redux/feature/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -11,10 +12,12 @@ import {
   FormikProps,
 } from "formik";
 import * as Yup from "yup";
-import { MyFormValues } from "../../types/Types";
+import { MyFormValues, Usertype } from "../../types/Types";
 import { toast, Slide } from "react-toastify";
 import Show from "../../assets/showpassword.svg";
 import Hide from "../../assets/hidepassword.svg";
+
+// const SECRET_KEY = "mysecretkey";
 
 // Function to check if the file type is valid (jpg, png)
 function checkFilesType(files: File): boolean {
@@ -76,7 +79,7 @@ const validationSchema = Yup.object().shape({
 
 function SignupForm() {
   const imgref = useRef<HTMLInputElement>(null);
-  const [imgUrl, setImgurl] = useState<string>("")!;
+  const [imgUrl, setImgurl] = useState<string>("");
   const [showimg, setShowimg] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -91,6 +94,15 @@ function SignupForm() {
     confirmPassword: "",
     profile: "",
   };
+
+  function encryption(password: string): string {
+    const encrypted = CryptoJS.AES.encrypt(
+      password,
+      import.meta.env.VITE_SECRET_KEY
+    ).toString();
+
+    return encrypted;
+  }
 
   // Function to navigate to the login page
   const navigateToLogin = () => {
@@ -120,8 +132,14 @@ function SignupForm() {
       });
       return;
     } else {
-      values.profile = imgUrl;
-      dispatch(signupUser(values));
+      const user: Usertype = {
+        name: values.name,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        password: encryption(values.password),
+        profile: imgUrl,
+      };
+      dispatch(signupUser(user));
       navigate("/");
       dispatch(loginUser({ email: values.email, password: values.password }));
       imgref.current!.value = "";
@@ -295,7 +313,7 @@ function SignupForm() {
       <div>
         <div className="login-text">
           Already have an account ?
-          <a onClick={navigateToLogin}>
+          <a onClick={() => navigateToLogin()}>
             <span>Login</span>
           </a>
         </div>
