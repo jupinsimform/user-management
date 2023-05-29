@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   width: 90%;
-  height: 90%;
+  height: 93%;
   margin: auto;
   background-color: white;
   border-radius: 20px;
@@ -56,7 +56,7 @@
   flex-direction: column;
 }
 
-.label {
+.input-label {
   font-size: 17px;
   margin: 13px 0;
   width: 100%;
@@ -130,6 +130,28 @@
 
 .login-text span:hover {
   color: rgb(52, 52, 241);
+}
+
+@media (max-width: 1024px) {
+  .signup {
+    font-size: 2.7rem;
+  }
+  .input-label {
+    margin: 8px 0;
+  }
+  div .input-field {
+    padding: 0.6rem;
+  }
+  .submitButton,
+  .resetButton {
+    padding: 8px;
+  }
+  div .btns {
+    margin-top: 18px;
+  }
+  div .password-field img {
+    top: 21%;
+  }
 }
 
 @media (max-width: 876px) {
